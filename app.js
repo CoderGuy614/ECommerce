@@ -1,5 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const morgan = require("morgan");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 
 // import routes
 const userRoutes = require("./routes/user");
@@ -17,6 +20,11 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => console.log("Connected to MongoDB"));
+
+//Middleware
+app.use(morgan("dev"));
+app.use(bodyParser.json());
+app.use(cookieParser());
 
 //Routes middleware
 app.use("/api", userRoutes);
