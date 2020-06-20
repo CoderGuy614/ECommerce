@@ -4,6 +4,16 @@ const _ = require("lodash");
 const Product = require("../models/product");
 const { errorHandler } = require("../helpers/dbErrorHandler");
 
+exports.productById = (req, res, next, id) => {
+  Product.findById(id).exec((err, product) => {
+    if (err || !product) {
+      return res.status(400).json({ error: "Product not found" });
+    }
+    req.product = product;
+    next();
+  });
+};
+
 exports.create = (req, res) => {
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
@@ -55,4 +65,9 @@ exports.create = (req, res) => {
       res.json(result);
     });
   });
+};
+
+exports.read = (req, res) => {
+  req.product.photo = undefined;
+  return res.json(req.product);
 };
