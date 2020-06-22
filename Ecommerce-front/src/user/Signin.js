@@ -1,11 +1,105 @@
-import React from "react";
-import Layout from "../core/Layout";
-import { API } from "../config";
+import React, { useState } from "react";
+import { Link, Redirect } from "react-router-dom";
 
-const Signin = () => (
-  <Layout title="Sign In" description="Sign In To Node React App">
-    {API}
-  </Layout>
-);
+import Layout from "../core/Layout";
+import { signin } from "../auth";
+
+const Signin = () => {
+  const [values, setValues] = useState({
+    name: "",
+    email: "",
+    password: "",
+    error: "",
+    loading: false,
+    redirectToReferrer: false,
+  });
+
+  const { email, password, loading, error, redirectToReferrer } = values;
+
+  const handleChange = (name) => (event) => {
+    setValues({ ...values, error: false, [name]: event.target.value });
+  };
+
+  const clickSubmit = (event) => {
+    event.preventDefault();
+    setValues({ ...values, error: false, loading: true });
+    signin({ email, password }).then((data) => {
+      if (data.error) {
+        setValues({ ...values, error: data.error, loading: false });
+      } else {
+        setValues({
+          ...values,
+          redirectToReferrer: true,
+        });
+      }
+    });
+  };
+
+  const signUpForm = () => (
+    <form>
+      <div className="form-group">
+        <label htmlFor="" className="text-muted">
+          Email
+        </label>
+        <input
+          onChange={handleChange("email")}
+          type="email"
+          className="form-control"
+          value={email}
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="" className="text-muted">
+          Password
+        </label>
+        <input
+          onChange={handleChange("password")}
+          type="password"
+          className="form-control"
+          value={password}
+        />
+      </div>
+      <button onClick={clickSubmit} className="btn btn-primary">
+        Submit
+      </button>
+    </form>
+  );
+
+  const showLoading = () =>
+    loading && (
+      <div className="alert alert-info">
+        <h2>Loading....</h2>
+      </div>
+    );
+
+  const redirectUser = () => {
+    if (redirectToReferrer) {
+      return <Redirect to="/" />;
+    }
+  };
+
+  const showError = () => (
+    <div
+      className="alert alert-danger"
+      style={{ display: error ? "" : "none" }}
+    >
+      {error}
+    </div>
+  );
+
+  return (
+    <Layout
+      title="Sign Up"
+      description="Sign Up for E-commerce Shop"
+      className="container col-md-8 offset-md-2"
+    >
+      {showLoading()}
+      {showError()}
+      {signUpForm()}
+      {redirectUser()}
+    </Layout>
+  );
+};
 
 export default Signin;

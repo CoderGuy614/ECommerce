@@ -8,7 +8,7 @@ exports.signup = (req, res) => {
   const user = new User(req.body);
   user.save((err, user) => {
     if (err) {
-      return res.status(400).json({ err: errorHandler(err) });
+      return res.status(400).json({ error: errorHandler(err) });
     }
     user.salt = undefined;
     user.hashed_password = undefined;
@@ -23,11 +23,11 @@ exports.signin = (req, res) => {
   User.findOne({ email }, (err, user) => {
     if (err || !user) {
       return res.status(400).json({
-        err: "User with the email does not exist",
+        error: "User with the email does not exist",
       });
     }
     if (!user.authenticate(password)) {
-      return res.status(401).json({ err: "Invalid Credentials" });
+      return res.status(401).json({ error: "Invalid Credentials" });
     }
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
     // persist the token as 't' in cookie
