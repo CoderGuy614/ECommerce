@@ -38,7 +38,7 @@ const Search = () => {
               name=""
               id=""
             >
-              <option value="All">Pick Category</option>
+              <option value="All">All</option>
               {categories.map((c, i) => (
                 <option key={i} value={c._id}>
                   {c.name}
@@ -66,16 +66,28 @@ const Search = () => {
 
   const searchedProducts = (results = []) => {
     return (
-      <div className="row">
-        {results.map((product, i) => (
-          <Card product={product} key={i} />
-        ))}
+      <div>
+        <h2 className="mt-4 mb-4">{searchMessage(searched, results)}</h2>
+        <div className="row">
+          {results.map((product, i) => (
+            <Card product={product} key={i} />
+          ))}
+        </div>
       </div>
     );
   };
 
+  const searchMessage = (searched, results) => {
+    if (searched && results.length > 0) {
+      return `Found ${results.length} products`;
+    }
+    if (searched && results.length < 1) {
+      return "No Products Found";
+    }
+  };
+
   const searchData = () => {
-    console.log(search, category);
+    // console.log(search, category);
     if (search) {
       list({ search: search || undefined, category: category }).then(
         (response) => {
