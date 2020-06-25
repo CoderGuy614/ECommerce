@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Layout from "./Layout";
-import { getProducts, read } from "../core/apiCore";
+import { read, listRelated } from "../core/apiCore";
 import Card from "./Card";
 import Search from "./Search";
 
 const Product = (props) => {
   const [product, setProduct] = useState({});
+  const [related, setRelated] = useState([]);
   const [error, setError] = useState(false);
 
   const loadSingleProduct = (productId) => {
@@ -14,6 +15,14 @@ const Product = (props) => {
         setError(data.error);
       } else {
         setProduct(data);
+        // fetch related products
+        listRelated(data._id).then((data) => {
+          if (data.error) {
+            setError(data.error);
+          } else {
+            setRelated(data);
+          }
+        });
       }
     });
   };
@@ -21,7 +30,7 @@ const Product = (props) => {
   useEffect(() => {
     const productId = props.match.params.productId;
     loadSingleProduct(productId);
-  }, []);
+  }, [props]);
 
   return (
     <Layout
@@ -34,9 +43,19 @@ const Product = (props) => {
       <Search />
       <h2 className="mb-4">Product Details</h2>
       <div className="row">
-        {product && product.description && (
-          <Card product={product} showViewProductButton={false} />
-        )}
+        <div className="col-8">
+          {product && product.description && (
+            <Card product={product} showViewProductButton={false} />
+          )}
+        </div>
+        <div className="col-4 apple">
+          <h4>Related Products</h4>
+          {related.map((product, i) => (
+            <div key={i} className="mb-3">
+              <Card product={product} />
+            </div>
+          ))}
+        </div>
       </div>
     </Layout>
   );

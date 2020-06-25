@@ -54,6 +54,7 @@ const AddProduct = () => {
 
   useEffect(() => {
     init();
+    //eslint-disable-next-line
   }, []);
 
   const handleChange = (name) => (event) => {
