@@ -3,13 +3,15 @@ import { Link } from "react-router-dom";
 import Layout from "./Layout";
 import { getCart, removeItem } from "./cartHelpers";
 import Card from "./Card";
+import Checkout from "./Checkout";
 
 const Cart = () => {
   const [items, setItems] = useState([]);
+  const [run, setRun] = useState(false);
 
   useEffect(() => {
     setItems(getCart());
-  }, [items]);
+  }, [run]);
 
   const showItems = (items) => {
     return (
@@ -23,6 +25,8 @@ const Cart = () => {
             showAddToCartButton={false}
             cartUpdate={true}
             showRemoveProductButton={true}
+            run={run}
+            setRun={setRun}
           />
         ))}
       </div>
@@ -49,7 +53,9 @@ const Cart = () => {
           {items.length > 0 ? showItems(items) : noItemsMessage()}
         </div>
         <div className="col-6">
-          <p>Show Checkout Options</p>
+          <h2 className="mb-4">Your Cart Summary</h2>
+          <hr />
+          <Checkout products={items} />
         </div>
       </div>
     </Layout>
