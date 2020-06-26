@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Layout from "./Layout";
-import { getProducts, getBraintreeClientToken } from "../core/apiCore";
+import {
+  getProducts,
+  getBraintreeClientToken,
+  processPayment,
+} from "../core/apiCore";
+import { emptyCart } from "./cartHelpers";
 import Card from "./Card";
 import Search from "./Search";
 import { isAuthenticated } from "../auth";
@@ -25,7 +30,7 @@ const Checkout = ({ products }) => {
       if (data.error) {
         setData({ ...data, error: data.error });
       } else {
-        setData({ ...data, clientToken: data.clientToken });
+        setData({ clientToken: data.clientToken });
       }
     });
   };
@@ -50,8 +55,39 @@ const Checkout = ({ products }) => {
     );
   };
 
+  const buy = () => {
+    // Send the nonce to the server
+    // nonce = data.instance.requestPaymentMethod()
+    let nonce;
+    let getNonce = data.instance
+      .requestPaymentMethod()
+      .then((data) => {
+        nonce = data.nonce;
+        //once you have the nonce (card type / number) send as payment method to back end with the total to be charget"
+        // console.log("Send Nonce", nonce, getTotal(products));
+        const paymentData = {
+          paymentMethodNonce: nonce,
+          amount: getTotal(products),
+        };
+        processPayment(userId, token, paymentData)
+          .then((response) => {
+            setData({ ...data, success: response.success });
+            emptyCart(() => {
+              console.log("Payment Success and Empty Cart!");
+            });
+            // Create Order
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((error) => {
+        setData({ ...data, error: error.message });
+      });
+  };
+
   const showDropIn = () => (
-    <div>
+    <div onBlur={() => setData({ ...data, error: "" })}>
       {data.clientToken !== null && products.length > 0 ? (
         <div>
           <DropIn
@@ -60,15 +96,37 @@ const Checkout = ({ products }) => {
             }}
             onInstance={(instance) => (data.instance = instance)}
           />
-          <button className="btn btn-success">Checkout</button>
+          <button onClick={buy} className="btn btn-success btn-block">
+            Pay Now
+          </button>
         </div>
       ) : null}
+    </div>
+  );
+
+  const showError = (error) => (
+    <div
+      className="alert alert-danger"
+      style={{ display: error ? "" : "none" }}
+    >
+      {error}
+    </div>
+  );
+
+  const showSuccess = (success) => (
+    <div
+      className="alert alert-info"
+      style={{ display: success ? "" : "none" }}
+    >
+      Thanks! Your payment was successful.
     </div>
   );
 
   return (
     <div>
       <h2>Total: ${getTotal()}</h2>
+      {showError(data.error)}
+      {showSuccess(data.success)}
       {showCheckout()}
     </div>
   );
