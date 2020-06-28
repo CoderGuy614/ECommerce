@@ -13,6 +13,8 @@ const Cart = () => {
     setItems(getCart());
   }, [run]);
 
+  // Added run and setRun to force state update
+
   const showItems = (items) => {
     return (
       <div>
