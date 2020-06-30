@@ -98,7 +98,7 @@ export const updateOrderStatus = (userId, token, orderId, status) => {
 // Delete a single product
 
 export const getProducts = () => {
-  return fetch(`${API}/products`, {
+  return fetch(`${API}/products?limit=100`, {
     method: "GET",
   })
     .then((response) => {
@@ -123,7 +123,7 @@ export const deleteProduct = (productId, userId, token) => {
 };
 
 export const getProduct = (productId) => {
-  return fetch(`${API}/products/${productId}`, {
+  return fetch(`${API}/product/${productId}`, {
     method: "GET",
   })
     .then((response) => {
@@ -132,7 +132,7 @@ export const getProduct = (productId) => {
     .catch((err) => console.log(err));
 };
 
-export const updateProduct = (productId, token, userId, product) => {
+export const updateProduct = (productId, userId, token, product) => {
   return fetch(`${API}/product/${productId}/${userId}`, {
     method: "PUT",
     headers: {

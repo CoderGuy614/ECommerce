@@ -42,6 +42,8 @@ const ManageProducts = () => {
       <h2 className="mb-4">Manage Products</h2>
       <div className="row">
         <div className="col-12">
+          <h2 className="text-center">Total of {products.length} products</h2>
+          <hr />
           <ul className="list-group">
             {products.map((p, index) => (
               <li
