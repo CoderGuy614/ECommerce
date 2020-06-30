@@ -3,7 +3,6 @@ const fs = require("fs");
 const _ = require("lodash");
 const Product = require("../models/product");
 const { errorHandler } = require("../helpers/dbErrorHandler");
-const product = require("../models/product");
 
 exports.productById = (req, res, next, id) => {
   Product.findById(id)
