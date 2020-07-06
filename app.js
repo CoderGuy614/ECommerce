@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const path = require("path");
 const expressValidator = require("express-validator");
 require("dotenv").config();
 
@@ -41,6 +42,16 @@ app.use("/api", categoryRoutes);
 app.use("/api", productRoutes);
 app.use("/api", braintreeRoutes);
 app.use("/api", orderRoutes);
+
+// Serve Static Assets in Production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("Ecommerce-front/build"));
+  app.get("*", (req, res) => {
+    res.sendFile(
+      path.resolve(__dirname, "Ecommerce-front", "build", "index.html")
+    );
+  });
+}
 
 const port = process.env.PORT || 8000;
 
